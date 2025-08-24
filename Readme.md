@@ -32,7 +32,7 @@ A DS homebrew application that:
   <save>          # Path to the AC:WW save file
   <empty line >   # The file must end with an empty line
   ```
-- Requires an active internet connection to communicate with the server. This connection must be configured beforehand. If running on a 3DS, ensure that a DS connection is set up in the system settings for the homebrew to function properly.
+- Requires an active internet connection to communicate with the server. This connection must be configured beforehand.
 
 #### Installation on 3DS
 1. Download the `3ds.zip` file from the latest release.
