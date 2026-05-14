@@ -58,7 +58,7 @@ type GenRequest struct {
 	SenderId     string `json:"senderId"`     // villager id 002d
 	ReceiverName string `json:"receiverName"` // receiver (player?) name
 	TownName     string `json:"townName"`     // town name
-	AttachmentId uint16 `json:"attachmentId"` // id of the attached gift
+	AttachmentId int    `json:"attachmentId"` // id of the attached gift
 	Score        int    `json:"score"`        // < 50 -> negative or confused reply
 	Intro        string `json:"intro"`        // previous letter from the receiver
 	Body         string `json:"body"`         // previous letter from the receiver
@@ -89,10 +89,7 @@ func gen(c *gin.Context) {
 		return
 	}
 
-	attachmentName := "Package"
-	if request.AttachmentId == 0xf1ff {
-		attachmentName = "No package"
-	}
+	attachmentName := LoadAttachementInfo(uint16(request.AttachmentId))
 
 	prompt, err := buildPrompt(request.Language, request.Score, request.ReceiverName, *senderDescription, request.TownName, attachmentName, request.Intro+"\n"+request.Body+"\n"+request.End)
 	if err != nil {

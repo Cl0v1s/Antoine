@@ -301,12 +301,12 @@ class Letter {
         }
 
         uint16_t GetAttachementId() {
-            return (saveData[startOffset + regionalData->ATTACHMENT_ITEM] << 8) + (saveData[startOffset + regionalData->ATTACHMENT_ITEM + 1] & 0xFF);
+            return (saveData[startOffset + regionalData->ATTACHMENT_ITEM + 1] << 8) + (saveData[startOffset + regionalData->ATTACHMENT_ITEM] & 0xFF);
         }
 
         void SetAttachementId(uint16_t id) {
-            saveData[startOffset + regionalData->ATTACHMENT_ITEM] = id >> 8;
-            saveData[startOffset + regionalData->ATTACHMENT_ITEM+1] = id & 0xFF;
+            saveData[startOffset + regionalData->ATTACHMENT_ITEM + 1] = id >> 8;
+            saveData[startOffset + regionalData->ATTACHMENT_ITEM] = id & 0xFF;
         }
 
         bool Exists() {

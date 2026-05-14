@@ -64,14 +64,14 @@ static inline int buildBody(char* dest, const char* language, const char* sender
     intro = jsonEscape(intro);
     body = jsonEscape(body);
     end = jsonEscape(end);
-    
+
     return sprintf(dest, 
         "{\n"
         "  \"language\": \"%s\",\n"
         "  \"senderId\": \"%s\",\n"
         "  \"receiverName\": \"%s\",\n"
         "  \"townName\": \"%s\",\n"
-        "  \"attachementId\": %u,\n"
+        "  \"attachmentId\": %u,\n"
         "  \"score\": %d,\n"
         "  \"intro\": \"%s\",\n"
         "  \"body\": \"%s\",\n"
@@ -79,6 +79,7 @@ static inline int buildBody(char* dest, const char* language, const char* sender
         "}", 
         language, senderId, receiverName, townName, attachementId, score, intro.c_str(), body.c_str(), end.c_str()
     );
+
 }
 
 
