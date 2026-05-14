@@ -104,6 +104,7 @@ static inline int BCheck(const std::string &language, int score, std::string &bo
 
 static inline int CCheck(int score, std::string &body) {
     std::string::iterator c = std::find_if_not(body.begin(), body.end(), isSpace);
+    if(c == body.end()) return score - 10;
     if(*c == std::toupper(*c)) return score + 20;
     return score - 10;
 }
@@ -138,7 +139,7 @@ static inline int DCheck(int score, std::string &body) {
 
 /**
  * E: Checks ratio of spaces to non-spaces in the letter. 
- * If it’s all spaces, or (n_spaces * 100 / n_other) is less than 20, gives -20 points. 
+ * If it’s all spaces, or n_other/n_space*100 is less than 20, gives -20 points. 
  * Otherwise, +20 points.
  */
 static inline int ECheck(int score, std::string &body) {

@@ -51,7 +51,9 @@ class LetterFactory {
             }
 
             size_t firstNewline = reply.find('\n');
+            if (firstNewline == std::string::npos) return -1;
             size_t secondNewline = reply.find('\n', firstNewline + 1);
+            if (secondNewline == std::string::npos) return -1;
             std::string introPart = reply.substr(0, firstNewline);
             std::string bodyPart = reply.substr(firstNewline + 1, secondNewline - firstNewline - 1);
             std::string endPart = reply.substr(secondNewline + 1);

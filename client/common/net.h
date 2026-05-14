@@ -84,7 +84,7 @@ static inline int buildBody(char* dest, const char* language, const char* sender
 
 static inline int buildRequest(char* dest, const char* addr, int port, const char* json) {
     return sprintf(dest,
-        "GET /gen HTTP/1.0\r\n"
+        "POST /gen HTTP/1.0\r\n"
         "Host: %s\r\n"
         "Connection: close\r\n"
         "Content-Length: %d\r\n"

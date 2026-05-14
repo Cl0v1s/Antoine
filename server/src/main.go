@@ -150,6 +150,6 @@ func gen(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
-	router.GET("/gen", gen)
+	router.POST("/gen", gen)
 	router.Run() // listen and serve on 0.0.0.0:8080
 }
