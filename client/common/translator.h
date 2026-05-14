@@ -57,7 +57,7 @@ static inline unsigned char encodeChar(wchar_t input, bool jpn) {
     }
 
     if(!jpn) { // special char replacement for USA_EUR, yup that's not cool but editing the table above is not an option so...
-        if(input == 0x0027) return 0xD6; // replace ' for ’
+        if(input == 0x0027) return 0xB1; // replace ‘ for ‘
     }
 
     int index = -1;
