@@ -12,6 +12,5 @@ client.nds:
 build: client.nds client.3dsx
 
 test:
-	g++ common/score.test.cpp -o tests.out
-	./tests.out
-	rm ./tests.out
+	g++ common/score.test.cpp -o tests.out && ./tests.out; rm ./tests.out
+	g++ common/translator.test.cpp -o tests.out && ./tests.out; rm ./tests.out

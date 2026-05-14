@@ -7,7 +7,7 @@ TEST_CASE("ACheck: punctuation and capital letters scoring", "[ACheck]") {
     REQUIRE(ACheck(0, "Hello world.") == 20);
     std::string c = std::string("Hello world!");
     REQUIRE(ACheck(0, c) == 20);
-    REQUIRE(c == "Hello world!"); // ensure sstrign was not modified
+    REQUIRE(c == "Hello world!"); // ensure string was not modified
     REQUIRE(ACheck(0, "Hello world?") == 20);
     REQUIRE(ACheck(0, "Hello world. This is a test.") == 30);
     REQUIRE(ACheck(0, "Hello world. this is a test.") == 10);
