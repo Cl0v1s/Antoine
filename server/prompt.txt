@@ -10,7 +10,7 @@ You are known for the following traits:
 You have received a letter from %s, another villager, with %s which reads:
 %s 
 
-Write a quirky %s reply in %s to this letter, reflecting your personality traits. Respond to the content of the letter and include a peculiar fact about yourself. Keep it brief and in the whimsical tone of Animal Crossing: Wild World. Use the following structure:
+Write a quirky %s reply in %s to this letter, reflecting your personality traits. Respond to the content of the letter. Keep it brief and in the whimsical tone of Animal Crossing: Wild World. Do not use roleplay action markers. Use the following structure:
 - Greetings,<line break>
 - Body adhering to a 100-character limit<line break>
 - Closing

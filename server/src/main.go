@@ -10,6 +10,31 @@ import (
 	"golang.org/x/text/encoding/charmap"
 )
 
+func sanitize(s string) string {
+	s = strings.ReplaceAll(s, "**", "")
+	s = strings.ReplaceAll(s, "*", "")
+	r := strings.NewReplacer(
+		"…", "...",
+		"‘", "'",
+		"’", "'",
+		"“", "\"",
+		"”", "\"",
+		"–", "-",
+		"—", "-",
+		"«", "\"",
+		"»", "\"",
+	)
+	s = r.Replace(s)
+	// drop any remaining rune outside ISO-8859-1 (emojis, etc.)
+	var b strings.Builder
+	for _, c := range s {
+		if c <= 0xFF {
+			b.WriteRune(c)
+		}
+	}
+	return b.String()
+}
+
 func buildPrompt(language string, score int, receiverName string, senderDescription string, townName string, attachmentName string, content string) (string, error) {
 	var tone string
 	if score > 80 {
@@ -75,14 +100,18 @@ func gen(c *gin.Context) {
 		c.String(500, err.Error())
 		return
 	}
-	// fmt.Println(prompt)
+	if gin.IsDebugging() {
+		fmt.Println(prompt)
+	}
 	response, err := Call(prompt)
-	// fmt.Println(response)
+	if gin.IsDebugging() {
+		fmt.Println(response)
+	}
 	if err != nil {
 		fmt.Println(err)
 		c.String(500, err.Error())
 	} else {
-		reply := response.Choices[0].Message.Content
+		reply := sanitize(response.Choices[0].Message.Content)
 
 		// we cant trust llms regarding response length
 		parts := strings.Split(reply, "\n\n")

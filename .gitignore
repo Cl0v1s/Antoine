@@ -9,3 +9,5 @@ client/client
 server/server
 ac.config
 client/nds/_nds/nds-bootstrap
+client/nds/_nds/nds-bootstrap.nds
+ww.nds

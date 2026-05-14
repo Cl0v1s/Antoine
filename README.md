@@ -1,4 +1,4 @@
-# Animal Crossing Wild World - Letter Response System
+# Antoine - Animal Crossing Wild World Letter Response System
 
 This project aims to enhance the gameplay experience of **Animal Crossing: Wild World** by enabling villagers to genuinely respond to letters sent by players. The system consists of two main components: a **client** (a DS homebrew application) and a **server** (responsible for generating responses).
 

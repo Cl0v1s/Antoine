@@ -1,5 +1,5 @@
-antoine.bdx.town
-80
+localhost
+8080
 french
 true
 fat:/_nds/nds-bootstrap.nds
