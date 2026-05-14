@@ -17,10 +17,10 @@ The system works as follows:
 - **Read Sent Letters**: Extract letters sent by the player from the game's memory.
 - **Generate Responses**: Use a language model (currently Mistral) to create replies tailored to the villager's personality.
 - **Inject Responses**: Insert the generated replies into the game's memory.
+- **Letter Scoring**: Use the in-game scoring system to influence the tone of villager responses.
 
 ### Future Enhancements
-- **Prevent duplicates**: Remove letters from memory to prevent the game from generate replies by itself.
-- **Letter Scoring**: Simulate the in-game scoring system to influence friendship levels with villagers and response tone.
+- **Prevent duplicates**: Clear the sent letter from memory after processing to prevent the game from generating its own reply.
 - **Gift System**: Add gifts to villager responses based on the player's letter content or attached items.
 
 ## Technical Details
@@ -50,15 +50,15 @@ To prevent tampering, the game uses a checksum mechanism. The checksum is a litt
 A DS homebrew application that:
 - Reads and writes memory to interact with the game's save data.
 - Communicates with the server to fetch generated responses.
-- Requires configuration via a file named `ac.config` located alongside the homebrew on the DS's SD card. The file must be formatted as follows:
+- Requires configuration via a file named `ac.txt` located alongside the homebrew on the DS's SD card. The file must be formatted as follows:
   ```
   <server>        # Remote server address
   <port>          # Remote server port
   <lang>          # Language for villager responses (Supported: english, french)
-  <launcher>      # true/false - Launch AC:WW with nds-bootstrap after editing (only available on NDS)
-  <bootstrapNDS>  # Path to nds-bootstrap executable (only available on NDS), set to empty line on 3ds
-  <bootstrapINI>  # Path to nds-bootstrap configuration file (only available on NDS), set to empty line on 3ds
-  <rom>           # On nds: Path to the AC:WW ROM file on nds / On 3ds: Title id of AC:WW
+  <launcher>      # true/false - On NDS: launch AC:WW via nds-bootstrap (required) / On 3DS: launch the title defined in <rom>
+  <bootstrapNDS>  # Path to nds-bootstrap executable (NDS only, leave empty on 3DS)
+  <bootstrapINI>  # Path to nds-bootstrap configuration file (NDS only, leave empty on 3DS)
+  <rom>           # On NDS: path to the AC:WW ROM / On 3DS: title id of the nds-bootstrap frontend or AC:WW nds-forwarder
   <save>          # Path to the AC:WW save file
   <empty line >   # The file must end with an empty line
   ```
@@ -95,7 +95,7 @@ The placeholders will be dynamically replaced with the appropriate values during
 ## Getting Started
 
 1. **Set Up the Client**: Install the DS homebrew application on your device.
-2. **Configure the Client**: Create the `ac.config` file on the SD card with the required settings.
+2. **Configure the Client**: Create the `ac.txt` file on the SD card with the required settings.
 3. **Run the Server**: Deploy the server locally or on a remote machine with the required settings.
 4. **Send Letters**: Write letters to villagers in-game
 
