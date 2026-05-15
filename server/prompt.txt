@@ -16,6 +16,6 @@ Your reply must use this exact structure, with a blank line between each part:
 
 [Greeting — one short line, ends with a comma]
 
-[Body — one paragraph, STRICTLY under 100 characters{{sendtAttachmentLine}}]
+[Body — one paragraph, STRICTLY under 100 characters{{sendtAttachmentLine}} that ends with a question or hook to invite {{receiverName}} to write back]
 
-[Closing — one short line that ends with a question or hook to invite {{receiverName}} to write back]
+[Closing — one short line]

@@ -118,7 +118,7 @@ func randomGift(lt LetterType) uint16 {
 func GenerateAnswerGift(request Letter) uint16 {
 	// We only return a gift for a well written letter with an attachment
 	if request.Score <= 50 || request.AttachmentId == NO_ITEM || request.AttachmentId == 0 {
-		return NO_ITEM
+		return 0xFFF1
 	}
 	// 26 letters per lines
 	lines := len(request.Body) / 26

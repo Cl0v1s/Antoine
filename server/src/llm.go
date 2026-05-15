@@ -111,9 +111,6 @@ func buildPrompt(language string, score int, receiverName string, senderDescript
 }
 
 func getAttachmentName(id uint16) string {
-	if gin.IsDebugging() {
-		fmt.Printf("Letter contains gift %d\n", id)
-	}
 	if id == NO_ITEM || id == 0 {
 		return ""
 	}

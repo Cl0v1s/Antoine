@@ -1,6 +1,6 @@
 package main
 
-const NO_ITEM uint16 = 0xf1ff
+const NO_ITEM uint16 = 0xfff1
 
 var items = map[uint16]string{
 	0x001a: "Jacob's Ladder",
