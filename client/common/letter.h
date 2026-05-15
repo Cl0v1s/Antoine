@@ -305,10 +305,8 @@ class Letter {
         }
 
         void SetAttachementId(uint16_t id) {
-            consolef("set %04x\n", id);
             saveData[startOffset + regionalData->ATTACHMENT_ITEM + 1] = id >> 8;
             saveData[startOffset + regionalData->ATTACHMENT_ITEM] = id & 0xFF;
-            consolef("get %04x\n", this->GetAttachementId());
         }
 
         bool Exists() {

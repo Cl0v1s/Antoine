@@ -15,6 +15,7 @@ typedef struct {
     std::string body;
     std::string end;
     uint16_t attachmentId;
+    uint16_t paperId;
 } Content;
 
 class LetterFactory {
@@ -48,6 +49,7 @@ class LetterFactory {
             content.body = jsonStringValue(reply, "body");
             content.end = jsonStringValue(reply, "end");
             content.attachmentId = jsonUint16Value(reply, "attachmentId");
+            content.paperId = jsonUint16Value(reply, "paperId");
 
             if (content.intro.empty() || content.body.empty() || content.end.empty()) {
                 return -1;
@@ -70,6 +72,7 @@ class LetterFactory {
             answer.SetIntroPart(content.intro);
             answer.SetBodyPart(content.body);
             answer.SetEndPart(content.end);
+            answer.setPaperId(content.paperId);
 
             // back to the sender from the receiver
             answer.SetReceiverPlayerId(letter.GetSenderPlayerId());
@@ -84,7 +87,6 @@ class LetterFactory {
 
 
             answer.SetAttachementId(content.attachmentId);
-            answer.setPaperId(this->GetPaper());
             answer.SetFlags(FLAG_UNREAD);
             // answer.SetIntroFlag(INSERT_NAME_INTRO);
             answer.SetNameFlag(INSERT_NAME_INVENTORY);

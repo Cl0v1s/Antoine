@@ -82,11 +82,11 @@ The template supports named variable interpolation using the `{{variableName}}` 
 | `{{townName}}` | The player's town name |
 | `{{traits}}` | The villager's personality description |
 | `{{receiverName}}` | The player character's name |
-| `{{receivedAttachment}}` | Gift included in the player's letter (`"no gift"` if none) |
+| `{{receivedAttachmentName}}` | Gift included in the player's letter (`"no gift"` if none) |
 | `{{letter}}` | The full letter content from the player |
 | `{{tone}}` | Tone derived from the letter score: `"very happy"` (score > 80), `""` (score 50–80), or `"confused or negative"` (score < 50) |
 | `{{language}}` | The response language (e.g. `english`, `french`) |
-| `{{sentAttachment}}` | Gift the villager will send back, chosen automatically based on letter length (see below) |
+| `{{sentAttachmentName}}` | Gift the villager will send back, chosen automatically based on letter length (see below) |
 
 #### Reply Gift Generation
 
