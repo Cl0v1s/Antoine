@@ -35,6 +35,13 @@ func sanitize(s string) string {
 	return b.String()
 }
 
+func interpolate(template string, vars map[string]string) string {
+	for k, v := range vars {
+		template = strings.ReplaceAll(template, "{{"+k+"}}", v)
+	}
+	return template
+}
+
 func buildPrompt(language string, score int, receiverName string, senderDescription string, townName string, attachmentName string, content string) (string, error) {
 	var tone string
 	if score > 80 {
@@ -50,7 +57,15 @@ func buildPrompt(language string, score int, receiverName string, senderDescript
 		return "", err
 	}
 
-	return fmt.Sprintf(string(promptTemplate), townName, senderDescription, receiverName, attachmentName, content, tone, language), nil
+	return interpolate(string(promptTemplate), map[string]string{
+		"townName":    townName,
+		"traits":      senderDescription,
+		"receiverName": receiverName,
+		"attachment":  attachmentName,
+		"letter":      content,
+		"tone":        tone,
+		"language":    language,
+	}), nil
 }
 
 type GenRequest struct {

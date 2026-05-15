@@ -74,17 +74,26 @@ A backend system that:
   - `API_KEY`: Contains a valid Mistral API key for accessing the `mistral-small-latest` model.
   
 #### Prompt Configuration
-The server requires a file named `prompt.txt` located in its directory. This file contains the prompt template sent to the language model. The template must use the following placeholders in this specific order:
+The server requires a file named `prompt.txt` located in its directory. This file contains the prompt template sent to the language model.
 
-- `%s`: Town name
-- `%s`: Villager description
-- `%s`: Receiver's name
-- `%s`: Attachment name ("No package" will be inserted if there is no attachment)
-- `%s`: Letter content from the player
-- `%s`: Tone to use
-- `%s`: Language
+The template supports named variable interpolation using the `{{variableName}}` syntax. Variables can appear in any order, be repeated, or be omitted. The following variables are available:
 
-The placeholders will be dynamically replaced with the appropriate values during runtime. Ensure the prompt is crafted to guide the language model in generating accurate and immersive responses.
+| Variable | Description |
+|---|---|
+| `{{townName}}` | The player's town name |
+| `{{traits}}` | The villager's personality description |
+| `{{receiverName}}` | The player character's name |
+| `{{attachment}}` | The attached gift name (`"No package"` if none) |
+| `{{letter}}` | The full letter content from the player |
+| `{{tone}}` | Tone derived from the letter score: `"very happy"` (score > 80), `""` (score 50–80), or `"confused or negative"` (score < 50) |
+| `{{language}}` | The response language (e.g. `english`, `french`) |
+
+Example usage in `prompt.txt`:
+```
+You are a villager in {{townName}}. Your traits: {{traits}}
+You received a letter from {{receiverName}}: {{letter}}
+Write a {{tone}} reply in {{language}}.
+```
 
 ## References
 
