@@ -76,7 +76,7 @@ LetterStruct LETTER_EUR_USA = {
     .INTRO_PART = 0x34,
     .INTRO_LENGTH = 24,
     .BODY_PART = 0x4C,
-    .BODY_LENGTH = 129,
+    .BODY_LENGTH = 128,
     .END_PART = 0xCC,
     .END_LENGTH = 32,
 
@@ -305,8 +305,10 @@ class Letter {
         }
 
         void SetAttachementId(uint16_t id) {
+            consolef("set %04x\n", id);
             saveData[startOffset + regionalData->ATTACHMENT_ITEM + 1] = id >> 8;
             saveData[startOffset + regionalData->ATTACHMENT_ITEM] = id & 0xFF;
+            consolef("get %04x\n", this->GetAttachementId());
         }
 
         bool Exists() {

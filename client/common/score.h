@@ -179,9 +179,10 @@ static inline int GCheck(int score, std::string &body) {
 }
 
 static inline int calculateScore(const std::string &language, std::string body) { // copy is made on purpose
-    // Trim leading and trailing spaces from the body
-    size_t start = body.find_first_not_of(' ');
-    size_t end = body.find_last_not_of(' ');
+    // Trim leading and trailing spaces and null bytes (body is a fixed-size buffer in game memory)
+    const std::string trimChars(" \0", 2);
+    size_t start = body.find_first_not_of(trimChars);
+    size_t end = body.find_last_not_of(trimChars);
     body = (start == std::string::npos || end == std::string::npos) ? "" : body.substr(start, end - start + 1);
 
     int score = 0;

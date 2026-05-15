@@ -1,10 +1,6 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/gin-gonic/gin"
-)
+const NO_ITEM uint16 = 0xf1ff
 
 var items = map[uint16]string{
 	0x001a: "Jacob's Ladder",
@@ -1803,71 +1799,4 @@ var items = map[uint16]string{
 	0x4a3c: "K and K's Pic",
 	0x4a40: "Pelly's Pic",
 	0x4a44: "Phyllis's Pic",
-}
-
-func getItemType(id uint16) string {
-	if id >= 0x01 && id <= 0x1c {
-		return "FLOWER"
-	} else if id >= 0x1D && id <= 0x24 {
-		return "WEED"
-	} else if (id >= 0x25 && id <= 0x6D) || (id >= 0xC7 && id <= 0xD3) {
-		return "TREE"
-	} else if id >= 0x6E && id <= 0x89 {
-		return "PARCHEDFLOWER"
-	} else if id >= 0x8A && id <= 0xA5 {
-		return "WATEREDFLOWER"
-	} else if id >= 0xA7 && id <= 0xC6 {
-		return "PATTERN"
-	} else if (id >= 0xE3 && id <= 0xE7) || (id >= 0xED && id <= 0xFB) {
-		return "ROCK"
-	} else if id >= 0xE8 && id <= 0xEC {
-		return "MONEYROCK"
-	} else if id >= 0x1000 && id <= 0x10FF {
-		return "PAPER"
-	} else if (id >= 0x1100 && id <= 0x1143) || (id >= 0x1144 && id <= 0x1187) {
-		return "WALLPAPER/CARPET"
-	} else if id >= 0x11A8 && id <= 0x12AF {
-		return "SHIRT"
-	} else if id >= 0x12B0 && id <= 0x1322 {
-		return "CATCHABLE"
-	} else if id >= 0x1323 && id <= 0x1368 {
-		return "SONG"
-	} else if id >= 0x1369 && id <= 0x139F {
-		return "TOOL"
-	} else if id >= 0x13A8 && id <= 0x1457 {
-		return "HATS/GLASSES/MASKS"
-	} else if id >= 0x1492 && id <= 0x14FD {
-		return "MONEY"
-	} else if (id >= 0x14FE && id <= 0x1530) || (id >= 0x1542 && id <= 0x1548) || (id >= 0x155E && id <= 0x156D) {
-		return "ITEM"
-	} else if id >= 0x1531 && id <= 0x1541 {
-		return "TURNIP"
-	} else if id == 0x1549 {
-		return "FOSSIL"
-	} else if id >= 0x1554 && id <= 0x155C {
-		return "SHELL"
-	} else if id >= 0x3000 && id <= 0x45D8 {
-		return "FURNITURE"
-	} else if id >= 0x45DC && id <= 0x47D4 {
-		return "GYROID"
-	} else if id >= 0x47D8 && id <= 0x4A44 {
-		return "PIC"
-	}
-	return ""
-}
-
-func LoadAttachementInfo(id uint16) string {
-	if gin.IsDebugging() {
-		fmt.Printf("Letter contains gift %d\n", id)
-	}
-	if id == 0xf1ff || id == 0 {
-		return "no gift"
-	}
-
-	name, ok := items[id]
-	if !ok {
-		return "some gift"
-	}
-
-	return "gift " + name + "(" + getItemType(id) + ")"
 }

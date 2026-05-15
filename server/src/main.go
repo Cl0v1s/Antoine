@@ -1,87 +1,33 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
-	"strings"
-	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/text/encoding/charmap"
 )
 
-func sanitize(s string) string {
-	s = strings.ReplaceAll(s, "**", "")
-	s = strings.ReplaceAll(s, "*", "")
-	r := strings.NewReplacer(
-		"…", "...",
-		"‘", "'",
-		"’", "'",
-		"“", "\"",
-		"”", "\"",
-		"–", "-",
-		"—", "-",
-		"«", "\"",
-		"»", "\"",
-	)
-	s = r.Replace(s)
-	// drop any remaining rune outside ISO-8859-1 (emojis, etc.)
-	var b strings.Builder
-	for _, c := range s {
-		if c <= 0xFF {
-			b.WriteRune(c)
-		}
-	}
-	return b.String()
+type AnswerContent struct {
+	Intro string
+	Body  string
+	End   string
 }
 
-func interpolate(template string, vars map[string]string) string {
-	for k, v := range vars {
-		template = strings.ReplaceAll(template, "{{"+k+"}}", v)
-	}
-	return template
-}
-
-func buildPrompt(language string, score int, receiverName string, senderDescription string, townName string, attachmentName string, content string) (string, error) {
-	var tone string
-	if score > 80 {
-		tone = "very happy"
-	} else if score > 50 {
-		tone = ""
-	} else {
-		tone = "confused or negative"
-	}
-
-	promptTemplate, err := os.ReadFile("prompt.txt")
-	if err != nil {
-		return "", err
-	}
-
-	return interpolate(string(promptTemplate), map[string]string{
-		"townName":    townName,
-		"traits":      senderDescription,
-		"receiverName": receiverName,
-		"attachment":  attachmentName,
-		"letter":      content,
-		"tone":        tone,
-		"language":    language,
-	}), nil
-}
-
-type GenRequest struct {
+type Letter struct {
 	Language     string `json:"language"`
-	SenderId     string `json:"senderId"`     // villager id 002d
-	ReceiverName string `json:"receiverName"` // receiver (player?) name
+	VillagerId   string `json:"villagerId"`   // villager id 002d
+	PlayerName   string `json:"playerName"`   // player name
 	TownName     string `json:"townName"`     // town name
-	AttachmentId int    `json:"attachmentId"` // id of the attached gift
+	AttachmentId uint16 `json:"attachmentId"` // id of the attached gift
 	Score        int    `json:"score"`        // < 50 -> negative or confused reply
-	Intro        string `json:"intro"`        // previous letter from the receiver
-	Body         string `json:"body"`         // previous letter from the receiver
-	End          string `json:"end"`          // previous letter from the receiver
+	Intro        string `json:"intro"`
+	Body         string `json:"body"`
+	End          string `json:"end"`
 }
 
 func gen(c *gin.Context) {
-	var request GenRequest
+	var request Letter
 	err := c.BindJSON(&request)
 	if err != nil {
 		fmt.Println(err)
@@ -91,73 +37,42 @@ func gen(c *gin.Context) {
 
 	fmt.Printf("Request: %+v\n", request)
 
-	senderName, exists := GetVillagerName(request.SenderId)
+	senderName, exists := GetVillagerName(request.VillagerId)
 	if !exists {
-		c.String(404, "Villager "+request.SenderId+" does not exists.")
+		c.String(404, "Villager "+request.VillagerId+" does not exists.")
 		return
 	}
 
-	senderDescription, err := LoadVillagerInfos(senderName)
+	giftId := GenerateAnswerGift(request)
+
+	answer, err := GenerateAnswerContent(request, &senderName, giftId)
 	if err != nil {
 		fmt.Println(err)
 		c.String(500, err.Error())
 		return
 	}
 
-	attachmentName := LoadAttachementInfo(uint16(request.AttachmentId))
-
-	prompt, err := buildPrompt(request.Language, request.Score, request.ReceiverName, *senderDescription, request.TownName, attachmentName, request.Intro+"\n"+request.Body+"\n"+request.End)
+	jsonBytes, err := json.Marshal(Letter{
+		Intro:        answer.Intro,
+		Body:         answer.Body,
+		End:          answer.End,
+		AttachmentId: giftId,
+	})
 	if err != nil {
 		fmt.Println(err)
 		c.String(500, err.Error())
 		return
 	}
-	if gin.IsDebugging() {
-		fmt.Println(prompt)
-	}
-	response, err := Call(prompt)
-	if gin.IsDebugging() {
-		fmt.Println(response)
-	}
+
+	encoder := charmap.ISO8859_1.NewEncoder()
+	iso8859JSON, err := encoder.String(string(jsonBytes))
 	if err != nil {
 		fmt.Println(err)
 		c.String(500, err.Error())
-	} else {
-		reply := sanitize(response.Choices[0].Message.Content)
-
-		// we cant trust llms regarding response length
-		parts := strings.Split(reply, "\n\n")
-		body := parts[1]
-		var punctuation []rune
-		for _, r := range body {
-			if r == '.' || r == '?' || r == '!' {
-				punctuation = append(punctuation, r)
-			}
-		}
-		for utf8.RuneCountInString(body) > 96 {
-			bodyparts := strings.FieldsFunc(body, func(r rune) bool {
-				return r == '.' || r == '?' || r == '!'
-			})
-			bodyparts = bodyparts[:len(bodyparts)-1]
-			body = ""
-			for i := 0; i < len(bodyparts); i++ {
-				body += bodyparts[i] + string(punctuation[i])
-			}
-		}
-		parts[1] = body
-
-		reply = strings.Join(parts, "\n\n")
-
-		encoder := charmap.ISO8859_1.NewEncoder()
-		iso8859Text, err := encoder.String(reply)
-		if err != nil {
-			fmt.Println(err)
-			c.String(500, err.Error())
-			return
-		}
-		c.Header("Content-Type", "text/plain; charset=ISO-8859-1")
-		c.String(200, iso8859Text)
+		return
 	}
+	c.Header("Content-Type", "application/json; charset=ISO-8859-1")
+	c.String(200, iso8859JSON)
 }
 
 func main() {

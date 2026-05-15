@@ -39,6 +39,40 @@ Net* getNet();
 
 void closeNet();
 
+static inline std::string jsonStringValue(const std::string &json, const std::string &key) {
+    std::string search = "\"" + key + "\":\"";
+    size_t start = json.find(search);
+    if (start == std::string::npos) return "";
+    start += search.length();
+    std::string result;
+    bool escape = false;
+    for (size_t i = start; i < json.length(); i++) {
+        char c = json[i];
+        if (escape) {
+            if      (c == 'n')  result += '\n';
+            else if (c == '"')  result += '"';
+            else if (c == '\\') result += '\\';
+            else                result += c;
+            escape = false;
+        } else if (c == '\\') {
+            escape = true;
+        } else if (c == '"') {
+            break;
+        } else {
+            result += c;
+        }
+    }
+    return result;
+}
+
+static inline uint16_t jsonUint16Value(const std::string &json, const std::string &key) {
+    std::string search = "\"" + key + "\":";
+    size_t start = json.find(search);
+    if (start == std::string::npos) return 0;
+    start += search.length();
+    return (uint16_t)std::stoul(json.substr(start));
+}
+
 static inline std::string jsonEscape(const std::string &input) {
     std::string output;
     for (char c : input) {
@@ -68,8 +102,8 @@ static inline int buildBody(char* dest, const char* language, const char* sender
     return sprintf(dest, 
         "{\n"
         "  \"language\": \"%s\",\n"
-        "  \"senderId\": \"%s\",\n"
-        "  \"receiverName\": \"%s\",\n"
+        "  \"villagerId\": \"%s\",\n"
+        "  \"playerName\": \"%s\",\n"
         "  \"townName\": \"%s\",\n"
         "  \"attachmentId\": %u,\n"
         "  \"score\": %d,\n"

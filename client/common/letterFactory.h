@@ -14,6 +14,7 @@ typedef struct {
     std::string intro;
     std::string body;
     std::string end;
+    uint16_t attachmentId;
 } Content;
 
 class LetterFactory {
@@ -29,8 +30,8 @@ class LetterFactory {
          * Generate answer content from player's letter
          */
         int GenerateContent(Content &content, Letter &letter, const char* lang) {
-            char senderId[10]; 
-            sprintf(senderId, "%04x", letter.GetReceiverPlayerId() & 0xFF); // somehow it's actually on 8bits 
+            char villagerId[10];
+            sprintf(villagerId, "%04x", letter.GetReceiverPlayerId() & 0xFF); // somehow it's actually on 8bits
 
             std::string intro = letter.GetIntroPart();
             std::string body = letter.GetBodyPart();
@@ -38,38 +39,21 @@ class LetterFactory {
 
             int score = calculateScore(std::string(lang), body);
 
-            std::string reply = getNet()->call(lang, senderId, letter.GetSenderPlayerName().c_str(), letter.GetReceiverTownName().c_str(), letter.GetAttachementId(), score, intro, body, end);
+            std::string reply = getNet()->call(lang, villagerId, letter.GetSenderPlayerName().c_str(), letter.GetReceiverTownName().c_str(), letter.GetAttachementId(), score, intro, body, end);
             if(reply.length() == 0) {
-                return - 1;
+                return -1;
             }
 
-            for (size_t i = 0; i < reply.length() - 1; ++i) {
-                if (reply[i] == '\n' && reply[i + 1] == '\n') {
-                    reply.erase(i, 1);
-                    --i;
-                }
+            content.intro = jsonStringValue(reply, "intro");
+            content.body = jsonStringValue(reply, "body");
+            content.end = jsonStringValue(reply, "end");
+            content.attachmentId = jsonUint16Value(reply, "attachmentId");
+
+            if (content.intro.empty() || content.body.empty() || content.end.empty()) {
+                return -1;
             }
-
-            size_t firstNewline = reply.find('\n');
-            if (firstNewline == std::string::npos) return -1;
-            size_t secondNewline = reply.find('\n', firstNewline + 1);
-            if (secondNewline == std::string::npos) return -1;
-            std::string introPart = reply.substr(0, firstNewline);
-            std::string bodyPart = reply.substr(firstNewline + 1, secondNewline - firstNewline - 1);
-            std::string endPart = reply.substr(secondNewline + 1);
-
-            content.intro = introPart;
-            content.body = bodyPart;
-            content.end = endPart;
 
             return 0;
-        }
-
-        /**
-         * Generate attachement from player's letter
-         */
-        uint16_t GetAttachement(const Letter &letter) {
-            return NO_ATTACHEMENT;
         }
 
     public:
@@ -99,7 +83,7 @@ class LetterFactory {
             answer.SetSenderTownName(letter.GetReceiverTownName());
 
 
-            answer.SetAttachementId(this->GetAttachement(letter));
+            answer.SetAttachementId(content.attachmentId);
             answer.setPaperId(this->GetPaper());
             answer.SetFlags(FLAG_UNREAD);
             // answer.SetIntroFlag(INSERT_NAME_INTRO);

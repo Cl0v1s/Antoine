@@ -13,7 +13,6 @@ The system works as follows:
 
 ## Features
 
-### Minimum Viable Product (MVP)
 - **Read Sent Letters**: Extract letters sent by the player from the game's memory.
 - **Generate Responses**: Use a language model (currently Mistral) to create replies tailored to the villager's personality.
 - **Inject Responses**: Insert the generated replies into the game's memory.
@@ -83,15 +82,29 @@ The template supports named variable interpolation using the `{{variableName}}` 
 | `{{townName}}` | The player's town name |
 | `{{traits}}` | The villager's personality description |
 | `{{receiverName}}` | The player character's name |
-| `{{attachment}}` | The attached gift name (`"No package"` if none) |
+| `{{receivedAttachment}}` | Gift included in the player's letter (`"no gift"` if none) |
 | `{{letter}}` | The full letter content from the player |
 | `{{tone}}` | Tone derived from the letter score: `"very happy"` (score > 80), `""` (score 50–80), or `"confused or negative"` (score < 50) |
 | `{{language}}` | The response language (e.g. `english`, `french`) |
+| `{{sentAttachment}}` | Gift the villager will send back, chosen automatically based on letter length (see below) |
+
+#### Reply Gift Generation
+
+The villager's reply can include a gift chosen automatically from the item database based on the length of the player's letter:
+
+| Letter length | Pool |
+|---|---|
+| Short (~1 line) | A random **shirt** or **fruit** |
+| Medium (~2 lines) | A random piece of **furniture** |
+| Long (~3+ lines) | A random piece of **furniture**, **carpet**, or **wallpaper** |
+
+Use `{{sentAttachment}}` in the prompt template to inform the LLM of the chosen gift so it can reference it naturally in the reply.
 
 Example usage in `prompt.txt`:
 ```
 You are a villager in {{townName}}. Your traits: {{traits}}
 You received a letter from {{receiverName}}: {{letter}}
+Your answer letter will contain {{sentAttachment}}.
 Write a {{tone}} reply in {{language}}.
 ```
 
@@ -100,6 +113,7 @@ Write a {{tone}} reply in {{language}}.
 - [ACWW-Web-SaveEditor](https://github.com/Universal-Team/ACWW-Web-SaveEditor/blob/main/assets/js/core/letter.js)
 - [Animal Crossing Letters Project](https://jamchamb.net/projects/animal-crossing-letters)
 - [GameFAQs Discussion on Letter Buffers](https://gamefaqs.gamespot.com/boards/920786-animal-crossing-wild-world/41195712)
+- [Letter-Writing Tips](https://www.thonky.com/acww/letter-writing-tips)
 
 ## Getting Started
 

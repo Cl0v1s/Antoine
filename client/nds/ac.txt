@@ -5,4 +5,4 @@ true
 fat:/_nds/nds-bootstrap.nds
 fat:/_nds/nds-bootstrap.ini
 fat:/misc/ww.nds
-fat:/misc/save.sav
+fat:/misc/gift.sav
