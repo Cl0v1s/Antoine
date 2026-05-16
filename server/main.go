@@ -20,7 +20,6 @@ type Letter struct {
 	PlayerName   string `json:"playerName"`   // player name
 	TownName     string `json:"townName"`     // town name
 	AttachmentId uint16 `json:"attachmentId"` // id of the attached gift
-	Score        int    `json:"score"`        // < 50 -> negative or confused reply
 	Intro        string `json:"intro"`
 	Body         string `json:"body"`
 	End          string `json:"end"`
@@ -44,9 +43,11 @@ func gen(c *gin.Context) {
 		return
 	}
 
-	giftId := GenerateAnswerGift(request)
+	score := calculateScore(request.Language, request.Body)
 
-	answer, err := GenerateAnswerContent(request, &senderName, giftId)
+	giftId := GenerateAnswerGift(request, score)
+
+	answer, err := GenerateAnswerContent(request, &senderName, giftId, score)
 	if err != nil {
 		fmt.Println(err)
 		c.String(500, err.Error())

@@ -30,7 +30,7 @@
 
 class Net {
     public:
-        virtual std::string call(const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, int score, std::string &intro, std::string &body, std::string &end) = 0;
+        virtual std::string call(const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) = 0;
         virtual ~Net() {};
 };
 
@@ -40,25 +40,24 @@ Net* getNet();
 
 void closeNet();
 
-static inline int buildBody(char* dest, const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, int score, std::string &intro, std::string &body, std::string &end) {
+static inline int buildBody(char* dest, const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) {
 
     intro = jsonEscape(intro);
     body = jsonEscape(body);
     end = jsonEscape(end);
 
-    return sprintf(dest, 
+    return sprintf(dest,
         "{\n"
         "  \"language\": \"%s\",\n"
         "  \"villagerId\": \"%s\",\n"
         "  \"playerName\": \"%s\",\n"
         "  \"townName\": \"%s\",\n"
         "  \"attachmentId\": %u,\n"
-        "  \"score\": %d,\n"
         "  \"intro\": \"%s\",\n"
         "  \"body\": \"%s\",\n"
         "  \"end\": \"%s\"\n"
-        "}", 
-        language, senderId, receiverName, townName, attachementId, score, intro.c_str(), body.c_str(), end.c_str()
+        "}",
+        language, senderId, receiverName, townName, attachementId, intro.c_str(), body.c_str(), end.c_str()
     );
 
 }
@@ -77,9 +76,9 @@ static inline int buildRequest(char* dest, const char* addr, int port, const cha
     );
 }
 
-static inline int emit(int soc, const char* addr, int port, const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, int score, std::string &intro, std::string &body, std::string &end) {
+static inline int emit(int soc, const char* addr, int port, const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) {
     char* raw = (char*)malloc(sizeof(char) * 1000); // big size to be sure to store everything
-    buildBody(raw, language, senderId, receiverName, townName, attachementId, score, intro, body, end);
+    buildBody(raw, language, senderId, receiverName, townName, attachementId, intro, body, end);
     char* json = (char*)malloc(sizeof(char) * strlen(raw) + 1); // +1 to keep the \0
     memcpy(json, raw, sizeof(char) * strlen(raw) + 1);
     buildRequest(raw, addr, port, json);

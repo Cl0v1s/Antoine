@@ -115,9 +115,9 @@ func randomGift(lt LetterType) uint16 {
 }
 
 // Please see https://www.thonky.com/acww/letter-writing-tips
-func GenerateAnswerGift(request Letter) uint16 {
+func GenerateAnswerGift(request Letter, score int) uint16 {
 	// We only return a gift for a well written letter with an attachment
-	if request.Score <= 50 || request.AttachmentId == NO_ITEM || request.AttachmentId == 0 {
+	if score <= 50 || request.AttachmentId == NO_ITEM || request.AttachmentId == 0 {
 		return 0xFFF1
 	}
 	// 26 letters per lines

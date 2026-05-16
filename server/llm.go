@@ -113,14 +113,14 @@ func getAttachmentName(id uint16) string {
 	return "with " + name + " (" + getItemType(id) + ")"
 }
 
-func GenerateAnswerContent(request Letter, senderName *string, giftId uint16) (*AnswerContent, error) {
+func GenerateAnswerContent(request Letter, senderName *string, giftId uint16, score int) (*AnswerContent, error) {
 	senderDescription, err := LoadVillagerInfos(*senderName)
 	if err != nil {
 		return nil, err
 	}
 	sentAttachmentName := getAttachmentName(giftId)
 	receivedAttachmentName := getAttachmentName(request.AttachmentId)
-	prompt, err := buildPrompt(request.Language, request.Score, request.PlayerName, *senderDescription, request.TownName, receivedAttachmentName, sentAttachmentName, request.Intro+"\n"+request.Body+"\n"+request.End)
+	prompt, err := buildPrompt(request.Language, score, request.PlayerName, *senderDescription, request.TownName, receivedAttachmentName, sentAttachmentName, request.Intro+"\n"+request.Body+"\n"+request.End)
 	if err != nil {
 		return nil, err
 	}
