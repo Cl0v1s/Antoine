@@ -15,17 +15,11 @@ typedef struct {
     std::string end;
     uint16_t attachmentId;
     uint16_t paperId;
+    int score;
 } Content;
 
 class LetterFactory {
     private:
-        /**
-         * Get a random paper for the answer
-         */
-        unsigned char GetPaper() {
-            return 0x37;
-        }
-
         /**
          * Generate answer content from player's letter
          */
@@ -47,6 +41,7 @@ class LetterFactory {
             content.end = jsonStringValue(reply, "end");
             content.attachmentId = jsonUint16Value(reply, "attachmentId");
             content.paperId = jsonUint16Value(reply, "paperId");
+            content.score = jsonIntValue(reply, "score");
 
             if (content.intro.empty() || content.body.empty() || content.end.empty()) {
                 return -1;
@@ -82,10 +77,8 @@ class LetterFactory {
             answer.SetSenderTownId(letter.GetReceiverTownId());
             answer.SetSenderTownName(letter.GetReceiverTownName());
 
-
             answer.SetAttachementId(content.attachmentId);
             answer.SetFlags(FLAG_UNREAD);
-            // answer.SetIntroFlag(INSERT_NAME_INTRO);
             answer.SetNameFlag(INSERT_NAME_INVENTORY);
 
             return answer;

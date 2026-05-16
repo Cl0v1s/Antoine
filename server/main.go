@@ -24,6 +24,7 @@ type Letter struct {
 	Body         string `json:"body"`
 	End          string `json:"end"`
 	PaperId      uint16 `json:"paperId"`
+	Score        int    `json:"score"`
 }
 
 func gen(c *gin.Context) {
@@ -60,6 +61,7 @@ func gen(c *gin.Context) {
 		End:          answer.End,
 		AttachmentId: giftId,
 		PaperId:      randomPaper(),
+		Score:        score,
 	})
 	if err != nil {
 		fmt.Println(err)

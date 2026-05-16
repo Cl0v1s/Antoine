@@ -38,6 +38,14 @@ static inline uint16_t jsonUint16Value(const std::string &json, const std::strin
     return (uint16_t)std::stoul(json.substr(start));
 }
 
+static inline uint16_t jsonIntValue(const std::string &json, const std::string &key) {
+    std::string search = "\"" + key + "\":";
+    size_t start = json.find(search);
+    if (start == std::string::npos) return 0;
+    start += search.length();
+    return (int)std::stoi(json.substr(start));
+}
+
 static inline std::string jsonEscape(const std::string &input) {
     std::string output;
     for (char c : input) {

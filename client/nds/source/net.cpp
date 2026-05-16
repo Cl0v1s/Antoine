@@ -39,14 +39,14 @@ class NetNDS: public Net {
             free(addr);
         }
 
-        std::string call(const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, int score, std::string &intro, std::string &body, std::string &end) {
+        std::string call(const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) {
             int soc = socket(AF_INET, SOCK_STREAM, 0);
             int result = connect(soc, (struct sockaddr *)&this->remote, sizeof(this->remote));
             if(result != 0) {
                 consolef("%d: unable to connect to %s\n%s\n", errno, addr, strerror(errno) );
                 return std::string("");
             }
-            result = emit(soc, addr, port, language, senderId, receiverName, townName, attachementId, score, intro, body, end);
+            result = emit(soc, addr, port, language, senderId, receiverName, townName, attachementId, intro, body, end);
             if(result != 0) {
                 consolef("%d: unable to send data\n%s\n", errno, strerror(errno) );
                 return std::string("");
