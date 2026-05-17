@@ -167,11 +167,11 @@ class Letter {
         }
 
         uint16_t GetReceiverTownId() {
-            return (saveData[startOffset + regionalData->TOWNID_RECEIVER] << 8) + (saveData[startOffset + regionalData->TOWNID_RECEIVER + 1] & 0xFF);
+            return (saveData[startOffset + regionalData->TOWNID_RECEIVER + 1] << 8) + (saveData[startOffset + regionalData->TOWNID_RECEIVER] & 0xFF);
         }
         void SetReceiverTownId(uint16_t value) {
-            saveData[startOffset + regionalData->TOWNID_RECEIVER] = value >> 8;
-            saveData[startOffset + regionalData->TOWNID_RECEIVER + 1] = value & 0xFF;
+            saveData[startOffset + regionalData->TOWNID_RECEIVER + 1] = value >> 8;
+            saveData[startOffset + regionalData->TOWNID_RECEIVER] = value & 0xFF;
         }
 
         std::string GetReceiverTownName() {
@@ -184,11 +184,11 @@ class Letter {
         }
 
         uint16_t GetReceiverPlayerId() {
-            return (saveData[startOffset + regionalData->PLAYERID_RECEIVER] << 8) + (saveData[startOffset + regionalData->PLAYERID_RECEIVER + 1] & 0xFF);
+            return (saveData[startOffset + regionalData->PLAYERID_RECEIVER + 1] << 8) + (saveData[startOffset + regionalData->PLAYERID_RECEIVER] & 0xFF);
         }
         void SetReceiverPlayerId(uint16_t value) {
-            saveData[startOffset + regionalData->PLAYERID_RECEIVER] = value >> 8;
-            saveData[startOffset + regionalData->PLAYERID_RECEIVER + 1] = value & 0xFF;
+            saveData[startOffset + regionalData->PLAYERID_RECEIVER + 1] = value >> 8;
+            saveData[startOffset + regionalData->PLAYERID_RECEIVER] = value & 0xFF;
         }
 
         std::string GetReceiverPlayerName() {
@@ -201,11 +201,11 @@ class Letter {
         }
 
         uint16_t GetSenderTownId() {
-            return (saveData[startOffset + regionalData->TOWNID_SENDER] << 8) + (saveData[startOffset + regionalData->TOWNID_SENDER + 1] & 0xFF);
+            return (saveData[startOffset + regionalData->TOWNID_SENDER + 1] << 8) + (saveData[startOffset + regionalData->TOWNID_SENDER] & 0xFF);
         }
         void SetSenderTownId(uint16_t value) {
-            saveData[startOffset + regionalData->TOWNID_SENDER] = value >> 8;
-            saveData[startOffset + regionalData->TOWNID_SENDER + 1] = value & 0xFF;
+            saveData[startOffset + regionalData->TOWNID_SENDER + 1] = value >> 8;
+            saveData[startOffset + regionalData->TOWNID_SENDER] = value & 0xFF;
         }
         
         std::string GetSenderTownName() {
@@ -218,11 +218,11 @@ class Letter {
         }
         
         uint16_t GetSenderPlayerId() {
-            return (saveData[startOffset + regionalData->PLAYERID_SENDER] << 8) + (saveData[startOffset + regionalData->PLAYERID_SENDER + 1] & 0xFF);
+            return (saveData[startOffset + regionalData->PLAYERID_SENDER + 1] << 8) + (saveData[startOffset + regionalData->PLAYERID_SENDER] & 0xFF);
         }
         void SetSenderPlayerId(uint16_t value) {
-            saveData[startOffset + regionalData->PLAYERID_SENDER] = value >> 8;
-            saveData[startOffset + regionalData->PLAYERID_SENDER + 1] = value & 0xFF;
+            saveData[startOffset + regionalData->PLAYERID_SENDER + 1] = value >> 8;
+            saveData[startOffset + regionalData->PLAYERID_SENDER] = value & 0xFF;
         }
         
         std::string GetSenderPlayerName() {
