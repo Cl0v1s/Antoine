@@ -34,10 +34,10 @@ static inline void mainProcess(int key) {
         dsExit(1);
     }
 
-    // Player::LoadPlayers(saveData, &PLAYER_EUR_USA);
-    // for(int i = 0; i < PLAYER_COUNT; i++) {
-    //     PLAYERS[i].print();
-    // }
+    Player::LoadPlayers(saveData, &PLAYER_EUR_USA);
+    for(int i = 0; i < PLAYER_COUNT; i++) {
+        PLAYERS[i].print();
+    }
 
     Villager::LoadVillagers(saveData, &VILLAGER_EUR_USA);
     for(int i = 0; i < 1; i++) {

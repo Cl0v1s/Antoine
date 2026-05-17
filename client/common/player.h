@@ -7,9 +7,11 @@
 
 #include "translator.h"
 #include "utils.h"
+#include "letter.h"
 
 #define PLAYER_COUNT 4
 #define POCKET_SIZE  15
+#define MAILBOX_SIZE 10
 
 typedef struct {
     uint16_t PLAYER_START;
@@ -34,6 +36,8 @@ typedef struct {
     uint16_t LETTER_SIZE;
     uint16_t ACORNS;         // uint8_t
     int16_t  BED;            // uint8_t, -1 = not available
+    uint32_t MAILBOX;        // absolute address for player 0
+    uint16_t MAILBOX_STRIDE; // bytes between player mailboxes
 } PlayerStruct;
 
 PlayerStruct PLAYER_EUR_USA = {
@@ -58,6 +62,8 @@ PlayerStruct PLAYER_EUR_USA = {
     .LETTER_SIZE    = 0xF4,
     .ACORNS         = 0x2225,
     .BED            = -1,
+    .MAILBOX        = 0x1200C,
+    .MAILBOX_STRIDE = 0x0A80,
 };
 
 PlayerStruct PLAYER_JPN = {
@@ -82,6 +88,8 @@ PlayerStruct PLAYER_JPN = {
     .LETTER_SIZE    = 0x8C,
     .ACORNS         = 0x1CB1,
     .BED            = 0x1C9E,
+    .MAILBOX        = 0x0, // TODO
+    .MAILBOX_STRIDE = 0x0, // TODO
 };
 
 PlayerStruct PLAYER_KOR = {
@@ -106,6 +114,8 @@ PlayerStruct PLAYER_KOR = {
     .LETTER_SIZE    = 0x100,
     .ACORNS         = 0x2421,
     .BED            = -1,
+    .MAILBOX        = 0x0, // TODO
+    .MAILBOX_STRIDE = 0x0, // TODO
 };
 
 
@@ -246,6 +256,27 @@ class Player {
         }
         void SetAcorns(uint8_t value) {
             saveData[startOffset + regionalData->ACORNS] = value;
+        }
+
+        uint32_t GetMailboxOffset() {
+            int i = (startOffset - regionalData->PLAYER_START) / regionalData->PLAYER_SIZE;
+            return regionalData->MAILBOX + i * regionalData->MAILBOX_STRIDE;
+        }
+
+        uint32_t GetFreeMailboxSlot() {
+            uint32_t slotAddr = this->GetMailboxOffset();
+            int i = 0;
+            do {
+                Letter curr(this->saveData, slotAddr, &LETTER_EUR_USA); // TODO intl
+                if(curr.Exists() == false) {
+                    i = -1;
+                } else {
+                    slotAddr += LETTER_EUR_USA.LETTER_SIZE;
+                    i++;
+                }
+            } while (i < MAILBOX_SIZE && i > 0);
+            if(i >= 0) return 0x00;
+            return slotAddr;
         }
 
         // Returns -1 if not available for this region

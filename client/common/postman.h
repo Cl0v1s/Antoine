@@ -5,22 +5,20 @@
 
 #include "letter.h"
 #include "letterFactory.h"
+#include "player.h"
 
 typedef struct {
-    int POST_BOX;
-    unsigned char POST_BOX_LENGTH;
+    uint32_t POST_BOX;
+    uint8_t POST_BOX_LENGTH;
 
-    int MAIL_BOX;
-    unsigned char MAIL_BOX_LENGTH;
-
+    uint32_t BOTTLE;
 } LetterMemory;
 
 LetterMemory LETTER_MEMORY_EUR_USA = {
     .POST_BOX = 0x1463C,
     .POST_BOX_LENGTH = 10,
 
-    .MAIL_BOX = 0x1200C,
-    .MAIL_BOX_LENGTH = 10,
+    .BOTTLE = 0x10c3c,
 };
 
 LetterFactory factory;
@@ -34,7 +32,7 @@ static inline LetterStruct* selectRegion(LetterMemory* region) {
     return 0;
 }
 
-static inline int loadLetters(char* save, int addr, int size,  Letter* letters, LetterStruct* region, bool dryRun = false) {
+static inline int loadLetters(char* save, int addr, int size,  Letter* letters, LetterStruct* region) {
     int i = 0;
     bool done = false;
     while (done == false && i < size) {
@@ -43,7 +41,7 @@ static inline int loadLetters(char* save, int addr, int size,  Letter* letters, 
         if(current.Exists() == false) {
             done = true;
         } else {
-            if(!dryRun) memcpy(&letters[i], &current, sizeof(Letter));
+            memcpy(&letters[i], &current, sizeof(Letter));
             i += 1;
         }
     }
@@ -51,12 +49,7 @@ static inline int loadLetters(char* save, int addr, int size,  Letter* letters, 
 }
 
 static inline int gatherLetter(char* save, Letter* letters, LetterMemory* region) {
-
     return loadLetters(save, region->POST_BOX, region->POST_BOX_LENGTH, letters, selectRegion(region));
-}
-
-static inline int getMailboxSlot(char* save, LetterMemory* region) {
-    return loadLetters(save, region->MAIL_BOX, region->MAIL_BOX_LENGTH, NULL, selectRegion(region), true);
 }
 
 // Please be sure to have room in your mailbox 
@@ -66,21 +59,38 @@ static inline int deliverLetters(char* save, Letter* letters, int length, Letter
     LetterStruct* letterRegion = selectRegion(region);
     int delivered = 0;
     while(done == false && i < length) {
-        int slot = getMailboxSlot(save, region);
-        if(slot >= region->MAIL_BOX_LENGTH) {
-            consolef("Not enough room in mailbox.\n");
-            done = true;
-        } else { 
-            int offset = region->MAIL_BOX + slot * letterRegion->LETTER_SIZE;
-            Letter ans = factory.Answer(letters[i], save, offset, letterRegion, lang);
-            if(ans.Exists()) {
-                delivered += 1;
+        int senderId = letters[i].GetSenderPlayerId();
+        Player* player = Player::GetPlayerWithId(senderId);
+        if(player == NULL) {
+            std::string playername = letters[i].GetSenderPlayerName();
+            consolef("No %s player found.", playername.c_str());
+        } else {
+            uint32_t offset = player->GetFreeMailboxSlot();
+            consolef("storing in %06x\n", offset);
+            if(offset == 0x00) {
+                consolef("Not enough room in mailbox.\n");
+                done = true;
+            } else { 
+                Letter ans = factory.Answer(letters[i], save, offset, letterRegion, lang);
+                if(ans.Exists()) {
+                    delivered += 1;
+                }
             }
-            // print(ans);
         }
         i += 1;
     }
     return delivered;
 }
+
+static inline bool gatherBottle(char* save, Letter* bottle, LetterMemory* region) {
+    int count = loadLetters(save, region->BOTTLE, 1, bottle, selectRegion(region));
+    return count > 0;
+}
+
+static inline void sendBottle(char* save, Letter* bottle, LetterMemory* region) {
+
+}
+ 
+
 
 #endif
