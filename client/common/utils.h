@@ -28,14 +28,24 @@ static inline void consolef(const char* tmpl, ...) {
     va_list args;
     va_start(args, tmpl);
 
+    va_list args_log;
+    va_copy(args_log, args);
+
     #if defined(ARM9) || defined(__3DS__)
         va_list args_copy;
         va_copy(args_copy, args);
         viprintf(tmpl, args_copy);
         va_end(args_copy);
-    #else 
+    #else
         vprintf(tmpl, args);
     #endif
+
+    FILE* log = fopen("logs.txt", "a");
+    if (log) {
+        vfprintf(log, tmpl, args_log);
+        fclose(log);
+    }
+    va_end(args_log);
 
     va_end(args);
 }

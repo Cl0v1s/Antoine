@@ -9,6 +9,8 @@
 #include "letterFactory.h"
 #include "postman.h"
 #include "bootstrap.h"
+#include "villager.h"
+#include "player.h"
 
 #define SAVE_LENGTH 0x3FFFF
 
@@ -32,6 +34,16 @@ static inline void mainProcess(int key) {
         dsExit(1);
     }
 
+    // Player::LoadPlayers(saveData, &PLAYER_EUR_USA);
+    // for(int i = 0; i < PLAYER_COUNT; i++) {
+    //     PLAYERS[i].print();
+    // }
+
+    Villager::LoadVillagers(saveData, &VILLAGER_EUR_USA);
+    for(int i = 0; i < 1; i++) {
+        VILLAGERS[i].print();
+    }
+
     LetterMemory* region = &LETTER_MEMORY_EUR_USA;
     Letter* letters = (Letter*)malloc(region->POST_BOX_LENGTH * sizeof(Letter));
     int letterLength = gatherLetter(saveData, letters, region);
@@ -40,6 +52,7 @@ static inline void mainProcess(int key) {
     //     print(letters[i]);
     // }
     int delivered = deliverLetters(saveData, letters, letterLength, region, config.lang.c_str());
+    // int delivered = 0;
     consolef("%d letters got a reply !\n", delivered);
     checksum(saveData);
     if(!writeFile(config.save.c_str(), saveData, SAVE_LENGTH)) {
