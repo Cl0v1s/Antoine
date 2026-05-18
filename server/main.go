@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/text/encoding/charmap"
@@ -80,8 +82,105 @@ func gen(c *gin.Context) {
 	c.String(200, iso8859JSON)
 }
 
+func throw(c *gin.Context) {
+	var request Letter
+	err := c.BindJSON(&request)
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+
+	fmt.Printf("Request: %+v\n", request)
+	if len(strings.Trim(request.Body, " ")) == 0 {
+		c.String(400, "Body can not be empty")
+		return
+	}
+	if len(strings.Trim(request.End, " ")) == 0 {
+		c.String(400, "End can not be empty")
+		return
+	}
+	if len(strings.Trim(request.PlayerName, " ")) == 0 {
+		c.String(400, "PlayerName can not be empty")
+		return
+	}
+	if len(strings.Trim(request.TownName, " ")) == 0 {
+		c.String(400, "TownName can not be empty")
+		return
+	}
+
+	recipient, err := ExtractRecipient(request.End)
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+	err = ThrowBottle(recipient, &request)
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+	c.Status(201)
+}
+
+func find(c *gin.Context) {
+	var request Letter
+	err := c.BindJSON(&request)
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+	fmt.Printf("Request: %+v\n", request)
+	if len(strings.Trim(request.PlayerName, " ")) == 0 {
+		c.String(400, "PlayerName can not be empty")
+		return
+	}
+	if len(strings.Trim(request.TownName, " ")) == 0 {
+		c.String(400, "TownName can not be empty")
+		return
+	}
+	bottle, err := FindBottle(request.PlayerName, request.TownName)
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+	if bottle == nil {
+		c.Status(404)
+		return
+	}
+	jsonBytes, err := json.Marshal(Letter{
+		Intro: bottle.Intro,
+		Body:  bottle.Body,
+		End:   bottle.End,
+	})
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+	encoder := charmap.ISO8859_1.NewEncoder()
+	iso8859JSON, err := encoder.String(string(jsonBytes))
+	if err != nil {
+		fmt.Println(err)
+		c.String(500, err.Error())
+		return
+	}
+	c.Header("Content-Type", "application/json; charset=ISO-8859-1")
+	c.String(200, iso8859JSON)
+}
+
 func main() {
+	err := InitDb()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 	router := gin.Default()
 	router.POST("/gen", gen)
+	router.POST("/throw", throw)
+	router.POST("/find", find)
 	router.Run() // listen and serve on 0.0.0.0:8080
 }

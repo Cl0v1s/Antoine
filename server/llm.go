@@ -168,6 +168,31 @@ func GenerateAnswerContent(request Letter, senderName *string, giftId uint16, sc
 	}, nil
 }
 
+type Recipient struct {
+	Name     string `json:"name"`
+	TownName string `json:"townName"`
+}
+
+func ExtractRecipient(end string) (*Recipient, error) {
+	prompt := "Here is the footer of a letter containing a recipient name and town name, user wants you to return a valid json in the form of { \"name\": <recipient-name>, \"townName\": <receipient-town> }. If you do not find any valid recipient name or town just return an empty json {}\n" + end
+	response, err := call(prompt)
+	if gin.IsDebugging() {
+		fmt.Println("Response: ")
+		fmt.Println(response)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	var recipient Recipient
+	err = json.Unmarshal([]byte(response.Choices[0].Message.Content), &recipient)
+	if err != nil {
+		return nil, err
+	}
+	return &recipient, nil
+}
+
 func call(prompt string) (*APIResponse, error) {
 	url := "https://api.mistral.ai/v1/chat/completions"
 	apiKey := os.Getenv("API_KEY")
