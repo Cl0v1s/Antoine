@@ -51,7 +51,7 @@ static inline void mainProcess(int key) {
     // for(int i = 0; i < letterLength; i++) {
     //     print(letters[i]);
     // }
-    int delivered = deliverLetters(saveData, letters, letterLength, region, config.lang.c_str());
+    int delivered = deliverLetters(&config, saveData, letters, letterLength, region);
     // int delivered = 0;
     consolef("%d letters got a reply !\n", delivered);
     checksum(saveData);

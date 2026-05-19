@@ -30,7 +30,7 @@
 
 class Net {
     public:
-        virtual std::string call(const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) = 0;
+        virtual std::string call(const char* request) = 0;
         virtual ~Net() {};
 };
 
@@ -40,76 +40,45 @@ Net* getNet();
 
 void closeNet();
 
-static inline int buildBody(char* dest, const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) {
-
-    intro = jsonEscape(intro);
-    body = jsonEscape(body);
-    end = jsonEscape(end);
-
-    return sprintf(dest,
-        "{\n"
-        "  \"language\": \"%s\",\n"
-        "  \"villagerId\": \"%s\",\n"
-        "  \"playerName\": \"%s\",\n"
-        "  \"townName\": \"%s\",\n"
-        "  \"attachmentId\": %u,\n"
-        "  \"intro\": \"%s\",\n"
-        "  \"body\": \"%s\",\n"
-        "  \"end\": \"%s\"\n"
-        "}",
-        language, senderId, receiverName, townName, attachementId, intro.c_str(), body.c_str(), end.c_str()
-    );
-
-}
-
-
-static inline int buildRequest(char* dest, const char* addr, int port, const char* json) {
-    return sprintf(dest,
-        "POST /gen HTTP/1.0\r\n"
+static inline std::string buildRequest(const char* addr, const char* url, const char* json) {
+    char* dest = (char*)malloc(1000*sizeof(char)); // big to be sure to handle all data
+    sprintf(dest,
+        "POST %s HTTP/1.0\r\n"
         "Host: %s\r\n"
         "Connection: close\r\n"
         "Content-Length: %d\r\n"
         "Content-Type: application/json\r\n"
         "\r\n"
         "%s",
-        addr, strlen(json), json
+        url,
+        addr, 
+        strlen(json), 
+        json
     );
+    std::string result = std::string(dest);
+    free(dest);
+    return result;
 }
 
-static inline int emit(int soc, const char* addr, int port, const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) {
-    char* raw = (char*)malloc(sizeof(char) * 1000); // big size to be sure to store everything
-    buildBody(raw, language, senderId, receiverName, townName, attachementId, intro, body, end);
-    char* json = (char*)malloc(sizeof(char) * strlen(raw) + 1); // +1 to keep the \0
-    memcpy(json, raw, sizeof(char) * strlen(raw) + 1);
-    buildRequest(raw, addr, port, json);
-    free(json);
-    char* request = (char*)malloc(sizeof(char) * strlen(raw) + 1); // +1 to keep the \0
-    memcpy(request, raw, sizeof(char) * strlen(raw) + 1);
-    free(raw);
-
-    // consolef("Sending:\n");
-    // consolef(request);
-    // consolef("\n");
+static inline int emit(int soc, const char* addr, int port, const char* request) {
+    consolef("Sending:\n");
+    consolef(request);
+    consolef("\n");
 
     int bytesSent;
-
     size_t totalSent = 0;
     size_t requestLength = strlen(request);
     while (totalSent < requestLength) {
         bytesSent = send(soc, request + totalSent, requestLength - totalSent, 0);
         if (bytesSent < 0) {
-            free(request);
             return -1;
         }
         totalSent += bytesSent;
     }
-
-    // consolef("Sent %d bytes\n", totalSent);
-    free(request);
     return 0;
 }
 
-static inline int receive(int soc, std::string &answer) {
+static inline int receive(int soc, std::string &result) {
     char buffer[1024];
     int bytesRead;
     std::string response;
@@ -147,7 +116,7 @@ static inline int receive(int soc, std::string &answer) {
         return -1;
     }
 
-    answer += body;
+    result += body;
 
     int statusCode = std::stoi(headers.substr(statusStart, statusEnd - statusStart));
     if (statusCode != 200) {

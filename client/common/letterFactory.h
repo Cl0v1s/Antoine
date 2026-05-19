@@ -8,7 +8,7 @@
 #include "./letter.h"
 #include "utils.h"
 #include "./net.h"
-
+#include "config.h"
 typedef struct {
     std::string intro;
     std::string body;
@@ -20,6 +20,31 @@ typedef struct {
 
 class LetterFactory {
     private:
+        Config* config;
+
+        static std::string buildBody(const char* language, const char* senderId, const char* receiverName, const char* townName, uint16_t attachementId, std::string &intro, std::string &body, std::string &end) {
+            char* dest = (char*)malloc(1000 * sizeof(char)); // big to be sure to be able to store all data
+            intro = jsonEscape(intro);
+            body = jsonEscape(body);
+            end = jsonEscape(end);
+            sprintf(dest,
+                "{\n"
+                "  \"language\": \"%s\",\n"
+                "  \"villagerId\": \"%s\",\n"
+                "  \"playerName\": \"%s\",\n"
+                "  \"townName\": \"%s\",\n"
+                "  \"attachmentId\": %u,\n"
+                "  \"intro\": \"%s\",\n"
+                "  \"body\": \"%s\",\n"
+                "  \"end\": \"%s\"\n"
+                "}",
+                language, senderId, receiverName, townName, attachementId, intro.c_str(), body.c_str(), end.c_str()
+            );
+            std::string result = std::string(dest);
+            free(dest);
+            return result;
+        }
+
         /**
          * Generate answer content from player's letter
          */
@@ -31,7 +56,10 @@ class LetterFactory {
             std::string body = letter.GetBodyPart();
             std::string end = letter.GetEndPart();
 
-            std::string reply = getNet()->call(lang, villagerId, letter.GetSenderPlayerName().c_str(), letter.GetReceiverTownName().c_str(), letter.GetAttachementId(), intro, body, end);
+            std::string json = buildBody(this->config->lang.c_str(), villagerId, letter.GetSenderPlayerName().c_str(), letter.GetReceiverTownName().c_str(), letter.GetAttachementId(), intro, body, end);
+            std::string request = buildRequest(this->config->server.c_str(), "/gen", json.c_str());
+
+            std::string reply = getNet()->call(request.c_str());
             if(reply.length() == 0) {
                 return -1;
             }
@@ -51,13 +79,16 @@ class LetterFactory {
         }
 
     public:
+        LetterFactory(Config* config) {
+            this->config = config;
+        }
         /**
          * Generate answer letter from player's letter
          */
-        Letter Answer(Letter &letter, char* save, int offset, LetterStruct* region, const char* lang) {
+        Letter Answer(Letter &letter, char* save, int offset, LetterStruct* region) {
             Letter answer(save, offset, region);
             Content content;
-            if(this->GenerateContent(content, letter, lang) == -1) {
+            if(this->GenerateContent(content, letter, this->config->lang.c_str()) == -1) {
                 consolef("Unable to generate reply\n");
                 return answer;
             }

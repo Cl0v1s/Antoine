@@ -6,6 +6,7 @@
 #include "letter.h"
 #include "letterFactory.h"
 #include "player.h"
+#include "config.h"
 
 typedef struct {
     uint32_t POST_BOX;
@@ -20,8 +21,6 @@ LetterMemory LETTER_MEMORY_EUR_USA = {
 
     .BOTTLE = 0x10c3c,
 };
-
-LetterFactory factory;
 
 static inline LetterStruct* selectRegion(LetterMemory* region) {
     if(region == &LETTER_MEMORY_EUR_USA) {
@@ -53,7 +52,8 @@ static inline int gatherLetter(char* save, Letter* letters, LetterMemory* region
 }
 
 // Please be sure to have room in your mailbox 
-static inline int deliverLetters(char* save, Letter* letters, int length, LetterMemory* region, const char* lang) {
+static inline int deliverLetters(Config* config, char* save, Letter* letters, int length, LetterMemory* region) {
+    LetterFactory factory(config);
     bool done = false;
     int i = 0;
     LetterStruct* letterRegion = selectRegion(region);
@@ -71,7 +71,7 @@ static inline int deliverLetters(char* save, Letter* letters, int length, Letter
                 consolef("Not enough room in mailbox.\n");
                 done = true;
             } else { 
-                Letter ans = factory.Answer(letters[i], save, offset, letterRegion, lang);
+                Letter ans = factory.Answer(letters[i], save, offset, letterRegion);
                 if(ans.Exists()) {
                     delivered += 1;
                 }
