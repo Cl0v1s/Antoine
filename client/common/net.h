@@ -61,9 +61,9 @@ static inline std::string buildRequest(const char* addr, const char* url, const 
 }
 
 static inline int emit(int soc, const char* addr, int port, const char* request) {
-    consolef("Sending:\n");
-    consolef(request);
-    consolef("\n");
+    // consolef("Sending:\n");
+    // consolef(request);
+    // consolef("\n");
 
     int bytesSent;
     size_t totalSent = 0;
@@ -119,7 +119,7 @@ static inline int receive(int soc, std::string &result) {
     result += body;
 
     int statusCode = std::stoi(headers.substr(statusStart, statusEnd - statusStart));
-    if (statusCode != 200) {
+    if (statusCode / 100 != 2) {
         errno = statusCode;
         return -1;
     }

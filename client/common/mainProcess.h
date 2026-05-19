@@ -45,6 +45,17 @@ static inline void mainProcess(int key) {
     }
 
     LetterMemory* region = &LETTER_MEMORY_EUR_USA;
+
+    // Manage bottles
+    Letter* bottle = (Letter*)malloc(sizeof(Letter));
+    bool found = gatherBottle(saveData, bottle, region);
+    if(found) {
+        consolef("A bottle was found. Throwing it.\n");
+        sendBottle(&config, saveData, bottle, region);
+    }
+    free(bottle);
+
+
     Letter* letters = (Letter*)malloc(region->POST_BOX_LENGTH * sizeof(Letter));
     int letterLength = gatherLetter(saveData, letters, region);
     consolef("Loaded %d letters\n", letterLength);

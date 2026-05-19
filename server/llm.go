@@ -185,8 +185,16 @@ func ExtractRecipient(end string) (*Recipient, error) {
 		return nil, err
 	}
 
+	raw := response.Choices[0].Message.Content
+	startIndex := strings.Index(raw, "{")
+	endIndex := strings.LastIndex(raw, "}")
+	if startIndex == -1 || endIndex == -1 || endIndex < startIndex {
+		return nil, fmt.Errorf("no JSON object found in response")
+	}
+	raw = raw[startIndex : endIndex+1]
+
 	var recipient Recipient
-	err = json.Unmarshal([]byte(response.Choices[0].Message.Content), &recipient)
+	err = json.Unmarshal([]byte(raw), &recipient)
 	if err != nil {
 		return nil, err
 	}

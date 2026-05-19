@@ -298,6 +298,10 @@ class Player {
                 (unsigned long)GetWalletAmount(),
                 (unsigned long)GetBankAmount());
         }
+
+        bool Exists() {
+            return this->GetPlayerId() != 0;
+        }
 };
 
 Player* PLAYERS = (Player*)malloc(PLAYER_COUNT * sizeof(Player));

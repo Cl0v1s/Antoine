@@ -121,7 +121,7 @@ func throw(c *gin.Context) {
 		c.String(500, err.Error())
 		return
 	}
-	c.Status(201)
+	c.String(201, "OK")
 }
 
 func find(c *gin.Context) {
@@ -148,7 +148,7 @@ func find(c *gin.Context) {
 		return
 	}
 	if bottle == nil {
-		c.Status(404)
+		c.Status(204)
 		return
 	}
 	jsonBytes, err := json.Marshal(Letter{
