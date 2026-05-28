@@ -219,8 +219,14 @@ $(OUTPUT).elf	:	$(OFILES)
 	@echo $(notdir $<)
 	@$(bin2o)
 
+
+.PHONY: check-convert                                                         
+check-convert:                                                                                         
+	@if ! command -v convert >/dev/null 2>&1; then \
+		sudo apt-get update && sudo apt-get install -y imagemagick; \
+	fi																				
 #---------------------------------------------------------------------------------
-%.bgr: %.png
+%.bgr: %.png check-convert 
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@convert $< -rotate 90 $@

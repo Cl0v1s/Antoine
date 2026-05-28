@@ -58,7 +58,7 @@ class Net3DS: public Net {
                 consolef("%d: unable to connect to %s\n%s\n", errno, addr, strerror(errno) );
                 return std::string("");
             }
-            result = emit(request);
+            result = emit(soc, addr, port, request);
             if(result != 0) {
                 consolef("%d: unable to send data\n%s\n", errno, strerror(errno) );
                 return std::string("");
