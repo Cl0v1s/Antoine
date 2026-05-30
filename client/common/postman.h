@@ -72,12 +72,7 @@ static inline int deliverLetters(Config *config, char *save, Letter *letters, in
     {
         int senderId = letters[i].GetSenderPlayerId();
         Player *player = Player::GetPlayerWithId(senderId);
-        if (player == NULL)
-        {
-            std::string playername = letters[i].GetSenderPlayerName();
-            consolef("No %s player found.", playername.c_str());
-        }
-        else
+        if (player != NULL)
         {
             uint32_t offset = player->GetFreeMailboxSlot();
             // consolef("storing in %06x\n", offset);
