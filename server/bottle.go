@@ -51,9 +51,11 @@ func FindBottle(recipientName string, recipientTownName string) (*Letter, error)
 		return nil, err
 	}
 	bottle := Letter{
-		Intro: "Pour " + recipientName + " de " + recipientTownName, // TODO intl,
-		Body:  body,
-		End:   "Signé " + senderName + " de " + senderTownName,
+		PlayerName: senderName,
+		TownName:   senderTownName,
+		Intro:      "Pour " + recipientName + " de " + recipientTownName, // TODO intl,
+		Body:       body,
+		End:        "Signé " + senderName + " de " + senderTownName,
 	}
 
 	return &bottle, nil

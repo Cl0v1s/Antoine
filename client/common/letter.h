@@ -19,7 +19,6 @@
 #define NO_ATTACHEMENT 0xFFF1
 
 #define INSERT_NAME_INTRO 0x02
-
 #define INSERT_NAME_INVENTORY 0x03
 
 typedef struct {

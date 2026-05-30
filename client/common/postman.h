@@ -133,7 +133,6 @@ static inline void receiveBottle(Config *config, char *save, LetterMemory *regio
 {
     for (int i = 0; i < PLAYER_COUNT; i++)
     {
-        consolef("Player %04x\n", PLAYERS[i].GetPlayerId());
         if (PLAYERS[i].Exists() == false)
             continue;
         std::string name = PLAYERS[i].GetName();
@@ -150,6 +149,8 @@ static inline void receiveBottle(Config *config, char *save, LetterMemory *regio
         std::string request = buildRequest(config->server.c_str(), "/find", json.c_str());
         std::string response = getNet()->call(request.c_str());
         if(response.length() == 0) continue;
+        std::string senderName = jsonStringValue(response, "playerName");
+        std::string senderTownName = jsonStringValue(response, "townName");
         std::string intro = jsonStringValue(response, "intro");
         std::string body = jsonStringValue(response, "body");
         std::string end = jsonStringValue(response, "end");
@@ -164,12 +165,19 @@ static inline void receiveBottle(Config *config, char *save, LetterMemory *regio
         bottle.SetIntroPart(intro);
         bottle.SetBodyPart(body);
         bottle.SetEndPart(end);
+        bottle.SetSenderPlayerId(PLAYERS[i].GetPlayerId());
+        bottle.SetSenderTownId(PLAYERS[i].GetTownId());
+        bottle.SetSenderPlayerName(senderName);
+        bottle.SetSenderTownName(senderTownName);
+        std::string playerName = PLAYERS[i].GetName();
         // back to the sender from the receiver
         bottle.SetReceiverPlayerId(PLAYERS[i].GetPlayerId());
-        bottle.SetReceiverPlayerName(PLAYERS[i].GetName());
+        bottle.SetReceiverPlayerName(playerName);
         bottle.SetReceiverTownId(PLAYERS[i].GetTownId());
         bottle.SetReceiverTownName(PLAYERS[i].GetTownName());
-        bottle.SetFlags(FLAG_RECEIVED_BOTTLE);
+        bottle.SetFlags(FLAG_CREATED_BOTTLE);
+        bottle.SetNameFlag(INSERT_NAME_INVENTORY); // TODO: SenderName is not shown yet
+        consolef("%s received a bottle !\n", playerName.c_str());
     }
 }
 

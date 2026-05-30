@@ -54,6 +54,7 @@ static inline void mainProcess(int key) {
         sendBottle(&config, saveData, bottle, region);
     }
     free(bottle);
+    receiveBottle(&config, saveData, region);
 
 
     Letter* letters = (Letter*)malloc(region->POST_BOX_LENGTH * sizeof(Letter));

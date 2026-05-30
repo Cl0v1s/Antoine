@@ -151,11 +151,7 @@ func find(c *gin.Context) {
 		c.Status(204)
 		return
 	}
-	jsonBytes, err := json.Marshal(Letter{
-		Intro: bottle.Intro,
-		Body:  bottle.Body,
-		End:   bottle.End,
-	})
+	jsonBytes, err := json.Marshal(bottle)
 	if err != nil {
 		fmt.Println(err)
 		c.String(500, err.Error())
